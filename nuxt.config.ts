@@ -4,14 +4,11 @@ export default defineNuxtConfig({
   devtools: {
     enabled: false,
   },
-  modules: ['@vueuse/nuxt', '@nuxt/ui', 'nuxt-monaco-editor', '@sentry/nuxt/module', 'nuxt-umami'],
+  modules: ['@vueuse/nuxt', '@nuxt/ui', 'nuxt-monaco-editor', 'nuxt-umami'],
   ssr: false,
   runtimeConfig: {
     public: {
       aggridLicense: process.env.NUXT_AGGRID_LICENSE,
-      sentry: {
-        dsn: process.env.NUXT_SENTRY_DSN,
-      },
       // 会员/限速层（仅公开托管用；默认关闭，fork 私有部署无限速、无付费 UI）
       membership: {
         enabled: process.env.NUXT_PUBLIC_MEMBERSHIP_ENABLED === 'true',
@@ -43,6 +40,11 @@ export default defineNuxtConfig({
   },
   nitro: {
     minify: process.env.NODE_ENV === 'production',
+    // 开启 wasm 支持（unwasm）：cgi 沙箱 @cf-wasm/quickjs 以 import 方式引入 .wasm 模块，
+    // 需要该插件处理（含 edge/CF 约定的 `.wasm?module` 后缀），否则 rollup 无法加载 wasm。
+    experimental: {
+      wasm: true,
+    },
     rollupConfig: {
       external: ['puppeteer'],
     },
@@ -64,14 +66,6 @@ export default defineNuxtConfig({
       codeEditor: 'MonacoEditor', // 普通编辑器组件名
       diffEditor: 'MonacoDiffEditor', // 差异编辑器组件名
     },
-  },
-
-  // https://docs.sentry.io/platforms/javascript/guides/nuxt/manual-setup/
-  sentry: {
-    org: process.env.NUXT_SENTRY_ORG,
-    project: process.env.NUXT_SENTRY_PROJECT,
-    authToken: process.env.NUXT_SENTRY_AUTH_TOKEN,
-    telemetry: false,
   },
 
   // https://umami.nuxt.dev/api/configuration
